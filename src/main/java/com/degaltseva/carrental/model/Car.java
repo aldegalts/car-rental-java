@@ -14,6 +14,12 @@ public class Car {
     private BigDecimal dailyCost;
     private Long carStatusId;
 
+    // Display fields (not persisted, populated by service)
+    private String categoryName;
+    private String colorName;
+    private String colorHex;
+    private String statusName;
+
     public Car() {}
 
     public Car(Long id, String brand, String model, int year, Long categoryId,
@@ -55,4 +61,16 @@ public class Car {
 
     public Long getCarStatusId() { return carStatusId; }
     public void setCarStatusId(Long carStatusId) { this.carStatusId = carStatusId; }
+
+    public String getCategoryName() { return categoryName; }
+    public void setCategoryName(String categoryName) { this.categoryName = categoryName; }
+
+    public String getColorName() { return colorName; }
+    public void setColorName(String colorName) { this.colorName = colorName; }
+
+    public String getColorHex() { return colorHex; }
+    public void setColorHex(String colorHex) { this.colorHex = colorHex; }
+
+    public String getStatusName() { return statusName; }
+    public void setStatusName(String statusName) { this.statusName = statusName; }
 }
