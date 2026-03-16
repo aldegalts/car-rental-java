@@ -6,6 +6,7 @@ public class User {
     private String username;
     private String passwordHash;
     private Long roleId;
+    private String roleName;
 
     public User() {}
 
@@ -27,4 +28,7 @@ public class User {
 
     public Long getRoleId() { return roleId; }
     public void setRoleId(Long roleId) { this.roleId = roleId; }
+
+    public String getRoleName() { return roleName; }
+    public void setRoleName(String roleName) { this.roleName = roleName; }
 }
