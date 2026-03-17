@@ -33,26 +33,39 @@ public class ConnectionPool {
             Properties props = new Properties();
             try (InputStream is = ConnectionPool.class.getClassLoader()
                     .getResourceAsStream("db.properties")) {
-                props.load(is);
+                if (is != null) {
+                    props.load(is);
+                }
             } catch (IOException e) {
-                throw new RuntimeException("Failed to load db.properties", e);
+                // db.properties is optional if env vars are set
             }
 
-            String driver = props.getProperty("db.driver");
+            String driver = env("DB_DRIVER", props.getProperty("db.driver", "org.postgresql.Driver"));
             try {
                 Class.forName(driver);
             } catch (ClassNotFoundException e) {
                 throw new RuntimeException("JDBC driver not found: " + driver, e);
             }
 
-            String url = props.getProperty("db.url");
-            String username = props.getProperty("db.username");
-            String password = props.getProperty("db.password");
-            int poolSize = Integer.parseInt(props.getProperty("db.pool.size", "10"));
+            String url = env("DB_URL", props.getProperty("db.url"));
+            String username = env("DB_USERNAME", props.getProperty("db.username"));
+            String password = env("DB_PASSWORD", props.getProperty("db.password"));
+            int poolSize = Integer.parseInt(env("DB_POOL_SIZE", props.getProperty("db.pool.size", "10")));
+
+            if (url == null || username == null || password == null) {
+                throw new RuntimeException(
+                        "Database not configured. Set env vars (DB_URL, DB_USERNAME, DB_PASSWORD) " +
+                        "or create src/main/resources/db.properties");
+            }
 
             instance = new ConnectionPool(url, username, password, poolSize);
         }
         return instance;
+    }
+
+    private static String env(String envKey, String fallback) {
+        String value = System.getenv(envKey);
+        return (value != null && !value.isBlank()) ? value : fallback;
     }
 
     private Connection createConnection() {
