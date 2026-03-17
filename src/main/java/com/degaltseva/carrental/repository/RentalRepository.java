@@ -182,7 +182,7 @@ public class RentalRepository implements BaseRepository<Rental> {
         List<Rental> rentals = new ArrayList<>();
         Connection conn = pool.getConnection();
         try (PreparedStatement ps = conn.prepareStatement(
-                "SELECT * FROM rentals WHERE start_date >= ? AND start_date <= ? ORDER BY id")) {
+                "SELECT * FROM rentals WHERE start_date >= ? AND end_date <= ? ORDER BY id")) {
             ps.setTimestamp(1, Timestamp.valueOf(startDate));
             ps.setTimestamp(2, Timestamp.valueOf(endDate));
             ResultSet rs = ps.executeQuery();
@@ -195,6 +195,26 @@ public class RentalRepository implements BaseRepository<Rental> {
             pool.releaseConnection(conn);
         }
         return rentals;
+    }
+
+    public int countRentalsWithViolations(LocalDateTime startDate, LocalDateTime endDate) {
+        Connection conn = pool.getConnection();
+        try (PreparedStatement ps = conn.prepareStatement(
+                "SELECT COUNT(DISTINCT v.rental_id) FROM violations v " +
+                        "JOIN rentals r ON v.rental_id = r.id " +
+                        "WHERE r.start_date >= ? AND r.end_date <= ?")) {
+            ps.setTimestamp(1, Timestamp.valueOf(startDate));
+            ps.setTimestamp(2, Timestamp.valueOf(endDate));
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        } finally {
+            pool.releaseConnection(conn);
+        }
+        return 0;
     }
 
     @Override
