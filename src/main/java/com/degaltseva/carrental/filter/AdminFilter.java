@@ -22,7 +22,7 @@ public class AdminFilter implements Filter {
         if (session != null) {
             User user = (User) session.getAttribute("user");
             if (user != null && "admin".equals(user.getRoleName())) {
-                chain.doFilter(request, response);
+                chain.doFilter(request, response); // пропустить запрос дальше по цепочке
                 return;
             }
         }

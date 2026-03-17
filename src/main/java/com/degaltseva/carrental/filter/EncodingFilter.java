@@ -13,6 +13,6 @@ public class EncodingFilter implements Filter {
         request.setCharacterEncoding("UTF-8");
         response.setCharacterEncoding("UTF-8");
         response.setContentType("text/html; charset=UTF-8");
-        chain.doFilter(request, response);
+        chain.doFilter(request, response); // пропустить запрос дальше по цепочке
     }
 }

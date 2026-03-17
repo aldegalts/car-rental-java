@@ -13,7 +13,7 @@ public class Violation {
     private LocalDateTime violationDate;
     private boolean paid;
 
-    // transient display fields
+    // Для отображения
     private String violationTypeName;
 
     public Violation() {}

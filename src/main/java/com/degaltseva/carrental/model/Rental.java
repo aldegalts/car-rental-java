@@ -13,7 +13,7 @@ public class Rental {
     private BigDecimal totalAmount;
     private Long rentalStatusId;
 
-    // transient display fields
+    // Для отображения
     private String clientName;
     private String carName;
     private String carLicensePlate;

@@ -14,7 +14,7 @@ public class Client {
     private LocalDate licenseExpiryDate;
     private Long userId;
 
-    // transient — не хранится в БД, заполняется сервисом
+    // ClientService
     private String username;
 
     public Client() {}

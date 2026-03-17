@@ -14,7 +14,7 @@ public class Car {
     private BigDecimal dailyCost;
     private Long carStatusId;
 
-    // Display fields (not persisted, populated by service)
+    // Для отображения
     private String categoryName;
     private String colorName;
     private String colorHex;

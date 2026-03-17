@@ -23,6 +23,6 @@ public class AuthFilter implements Filter {
             return;
         }
 
-        chain.doFilter(request, response);
+        chain.doFilter(request, response); // пропустить запрос дальше по цепочке
     }
 }

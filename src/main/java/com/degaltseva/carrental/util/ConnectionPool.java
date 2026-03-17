@@ -37,7 +37,7 @@ public class ConnectionPool {
                     props.load(is);
                 }
             } catch (IOException e) {
-                // db.properties is optional if env vars are set
+
             }
 
             String driver = env("DB_DRIVER", props.getProperty("db.driver", "org.postgresql.Driver"));
