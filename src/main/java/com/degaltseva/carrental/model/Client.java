@@ -14,6 +14,9 @@ public class Client {
     private LocalDate licenseExpiryDate;
     private Long userId;
 
+    // transient — не хранится в БД, заполняется сервисом
+    private String username;
+
     public Client() {}
 
     public Client(Long id, String name, String surname, LocalDate birthDate,
@@ -56,4 +59,7 @@ public class Client {
 
     public Long getUserId() { return userId; }
     public void setUserId(Long userId) { this.userId = userId; }
+
+    public String getUsername() { return username; }
+    public void setUsername(String username) { this.username = username; }
 }
