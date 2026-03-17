@@ -3,11 +3,12 @@
 }
 
 .card {
-    transition: transform 0.2s;
+    transition: transform 0.2s, box-shadow 0.2s;
 }
 
 .card:hover {
     transform: translateY(-5px);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
 }
 
 footer {
@@ -18,8 +19,78 @@ body {
     display: flex;
     flex-direction: column;
     min-height: 100vh;
+    background-color: #f8f9fa;
 }
 
 main {
     flex: 1;
+}
+
+/* Tables */
+.table th {
+    white-space: nowrap;
+}
+
+.table td {
+    vertical-align: middle;
+}
+
+/* Cards */
+.card.bg-primary,
+.card.bg-success,
+.card.bg-info,
+.card.bg-danger {
+    border: none;
+}
+
+.card.bg-primary:hover,
+.card.bg-success:hover,
+.card.bg-info:hover,
+.card.bg-danger:hover {
+    transform: translateY(-3px);
+}
+
+/* Forms */
+.form-control:focus,
+.form-select:focus {
+    border-color: #495057;
+    box-shadow: 0 0 0 0.2rem rgba(73, 80, 87, 0.25);
+}
+
+/* Buttons */
+.btn-primary {
+    background-color: #343a40;
+    border-color: #343a40;
+}
+
+.btn-primary:hover {
+    background-color: #23272b;
+    border-color: #1d2124;
+}
+
+/* Error pages */
+.display-1 {
+    font-weight: bold;
+    color: #6c757d;
+}
+
+/* List groups */
+.list-group-item-action:hover {
+    background-color: #e9ecef;
+}
+
+/* Alert messages */
+.alert {
+    border-radius: 0.5rem;
+}
+
+/* Badge improvements */
+.badge {
+    font-weight: 500;
+}
+
+/* Profile and detail tables */
+.table-borderless td,
+.table-borderless th {
+    padding: 0.5rem 1rem;
 }
