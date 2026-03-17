@@ -102,7 +102,7 @@ public class RentalService {
     public void completeExpiredRentals() {
         RentalStatus activeStatus = rentalStatusRepository.findByStatus("Активна").orElse(null);
         RentalStatus completedStatus = rentalStatusRepository.findByStatus("Завершена").orElse(null);
-        CarStatus freeStatus = carStatusRepository.findByStatus("Свободна").orElse(null);
+        CarStatus freeStatus = carStatusRepository.findByStatus("Доступен").orElse(null);
 
         if (activeStatus == null || completedStatus == null || freeStatus == null) return;
 

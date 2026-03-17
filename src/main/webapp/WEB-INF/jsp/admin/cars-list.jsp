@@ -65,7 +65,7 @@
                             </td>
                             <td>
                                 <c:choose>
-                                    <c:when test="${car.statusName == 'Свободна'}">
+                                    <c:when test="${car.statusName == 'Доступен'}">
                                         <span class="badge bg-success">${car.statusName}</span>
                                     </c:when>
                                     <c:when test="${car.statusName == 'В аренде'}">

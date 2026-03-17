@@ -107,7 +107,7 @@
                                         <li><strong>Номер:</strong> ${car.licensePlate}</li>
                                         <li><strong>Статус:</strong>
                                             <c:choose>
-                                                <c:when test="${car.statusName == 'Свободна'}">
+                                                <c:when test="${car.statusName == 'Доступен'}">
                                                     <span class="badge bg-success">${car.statusName}</span>
                                                 </c:when>
                                                 <c:when test="${car.statusName == 'В аренде'}">
@@ -124,8 +124,8 @@
                                 <div class="card-footer bg-transparent">
                                     <a href="${pageContext.request.contextPath}/catalog/${car.id}"
                                        class="btn btn-outline-primary btn-sm">Подробнее</a>
-                                    <c:if test="${not empty sessionScope.user && car.statusName == 'Свободна'}">
-                                        <a href="${pageContext.request.contextPath}/rentals/create?carId=${car.id}"
+                                    <c:if test="${not empty sessionScope.user && car.statusName == 'Доступен'}">
+                                        <a href="${pageContext.request.contextPath}/rentals/create/${car.id}"
                                            class="btn btn-primary btn-sm">Арендовать</a>
                                     </c:if>
                                 </div>

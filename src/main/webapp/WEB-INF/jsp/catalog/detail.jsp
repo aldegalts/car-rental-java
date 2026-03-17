@@ -34,7 +34,7 @@
                             <th>Статус</th>
                             <td>
                                 <c:choose>
-                                    <c:when test="${car.statusName == 'Свободна'}">
+                                    <c:when test="${car.statusName == 'Доступен'}">
                                         <span class="badge bg-success">${car.statusName}</span>
                                     </c:when>
                                     <c:when test="${car.statusName == 'В аренде'}">
@@ -55,8 +55,8 @@
 
                 <div class="d-flex gap-2 mt-3">
                     <c:choose>
-                        <c:when test="${not empty sessionScope.user && car.statusName == 'Свободна'}">
-                            <a href="${pageContext.request.contextPath}/rentals/create?carId=${car.id}"
+                        <c:when test="${not empty sessionScope.user && car.statusName == 'Доступен'}">
+                            <a href="${pageContext.request.contextPath}/rentals/create/${car.id}"
                                class="btn btn-primary">Арендовать</a>
                         </c:when>
                         <c:when test="${empty sessionScope.user}">
