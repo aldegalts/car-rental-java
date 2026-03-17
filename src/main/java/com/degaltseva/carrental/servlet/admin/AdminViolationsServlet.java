@@ -14,7 +14,8 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
-@WebServlet("/admin/rentals/*/violations/*")
+// Violation handling is now done by AdminRentalsServlet
+// This class is kept for reference but is no longer mapped as a servlet
 public class AdminViolationsServlet extends HttpServlet {
 
     private final ViolationService violationService = new ViolationService();

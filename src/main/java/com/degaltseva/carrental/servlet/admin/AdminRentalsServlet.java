@@ -1,6 +1,7 @@
 package com.degaltseva.carrental.servlet.admin;
 
 import com.degaltseva.carrental.model.Rental;
+import com.degaltseva.carrental.model.Violation;
 import com.degaltseva.carrental.service.*;
 import com.degaltseva.carrental.service.ViolationService;
 import com.degaltseva.carrental.service.ViolationTypeService;
@@ -35,6 +36,8 @@ public class AdminRentalsServlet extends HttpServlet {
             showDetail(req, resp, pathInfo);
         } else if (pathInfo.matches("/\\d+/edit")) {
             showEditForm(req, resp, pathInfo);
+        } else if (pathInfo.matches("/\\d+/violations/\\d+/edit")) {
+            showViolationEditForm(req, resp, pathInfo);
         } else {
             resp.sendError(HttpServletResponse.SC_NOT_FOUND);
         }
@@ -53,6 +56,12 @@ public class AdminRentalsServlet extends HttpServlet {
             doUpdate(req, resp, pathInfo);
         } else if (pathInfo.matches("/\\d+/delete")) {
             doDelete(req, resp, pathInfo);
+        } else if (pathInfo.matches("/\\d+/violations")) {
+            doCreateViolation(req, resp, pathInfo);
+        } else if (pathInfo.matches("/\\d+/violations/\\d+/edit")) {
+            doUpdateViolation(req, resp, pathInfo);
+        } else if (pathInfo.matches("/\\d+/violations/\\d+/delete")) {
+            doDeleteViolation(req, resp, pathInfo);
         } else {
             resp.sendError(HttpServletResponse.SC_NOT_FOUND);
         }
@@ -213,5 +222,124 @@ public class AdminRentalsServlet extends HttpServlet {
         if (value == null || value.isBlank()) return null;
         try { return Long.parseLong(value.trim()); }
         catch (NumberFormatException e) { return null; }
+    }
+
+    // --- Violation handling ---
+
+    private void showViolationEditForm(HttpServletRequest req, HttpServletResponse resp, String pathInfo)
+            throws ServletException, IOException {
+        Long[] ids = extractViolationIds(pathInfo);
+        if (ids == null) { resp.sendError(HttpServletResponse.SC_NOT_FOUND); return; }
+
+        Optional<Violation> violation = violationService.findById(ids[1]);
+        if (violation.isEmpty()) { resp.sendError(HttpServletResponse.SC_NOT_FOUND); return; }
+
+        req.setAttribute("violation", violation.get());
+        req.setAttribute("rentalId", ids[0]);
+        req.setAttribute("violationTypes", violationTypeService.findAll());
+        req.setAttribute("pageTitle", "Редактирование нарушения");
+        req.getRequestDispatcher("/WEB-INF/jsp/admin/violation-edit.jsp").forward(req, resp);
+    }
+
+    private void doCreateViolation(HttpServletRequest req, HttpServletResponse resp, String pathInfo)
+            throws ServletException, IOException {
+        Long rentalId = extractId(pathInfo);
+        if (rentalId == null) { resp.sendError(HttpServletResponse.SC_NOT_FOUND); return; }
+
+        Violation v = parseViolationForm(req);
+        v.setRentalId(rentalId);
+
+        String error = validateViolation(v);
+        if (error != null) {
+            resp.sendRedirect(req.getContextPath() + "/admin/rentals/" + rentalId + "?error=" + error);
+            return;
+        }
+
+        violationService.save(v);
+        resp.sendRedirect(req.getContextPath() + "/admin/rentals/" + rentalId + "?message=violation_created");
+    }
+
+    private void doUpdateViolation(HttpServletRequest req, HttpServletResponse resp, String pathInfo)
+            throws ServletException, IOException {
+        Long[] ids = extractViolationIds(pathInfo);
+        if (ids == null) { resp.sendError(HttpServletResponse.SC_NOT_FOUND); return; }
+
+        Optional<Violation> existing = violationService.findById(ids[1]);
+        if (existing.isEmpty()) { resp.sendError(HttpServletResponse.SC_NOT_FOUND); return; }
+
+        Violation v = parseViolationForm(req);
+        v.setId(ids[1]);
+        v.setRentalId(ids[0]);
+
+        String error = validateViolation(v);
+        if (error != null) {
+            req.setAttribute("error", error);
+            req.setAttribute("violation", v);
+            req.setAttribute("rentalId", ids[0]);
+            req.setAttribute("violationTypes", violationTypeService.findAll());
+            req.setAttribute("pageTitle", "Редактирование нарушения");
+            req.getRequestDispatcher("/WEB-INF/jsp/admin/violation-edit.jsp").forward(req, resp);
+            return;
+        }
+
+        violationService.update(v);
+        resp.sendRedirect(req.getContextPath() + "/admin/rentals/" + ids[0] + "?message=violation_updated");
+    }
+
+    private void doDeleteViolation(HttpServletRequest req, HttpServletResponse resp, String pathInfo)
+            throws IOException {
+        Long[] ids = extractViolationIds(pathInfo);
+        if (ids == null) { resp.sendError(HttpServletResponse.SC_NOT_FOUND); return; }
+
+        violationService.delete(ids[1]);
+        resp.sendRedirect(req.getContextPath() + "/admin/rentals/" + ids[0] + "?message=violation_deleted");
+    }
+
+    // Extracts [rentalId, violationId] from paths like /4/violations/3/edit
+    private Long[] extractViolationIds(String pathInfo) {
+        try {
+            String[] parts = pathInfo.split("/");
+            // parts: ["", "4", "violations", "3", ...]
+            return new Long[]{Long.parseLong(parts[1]), Long.parseLong(parts[3])};
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    private Violation parseViolationForm(HttpServletRequest req) {
+        Violation v = new Violation();
+
+        String typeId = req.getParameter("violationTypeId");
+        if (typeId != null && !typeId.isBlank()) {
+            try { v.setViolationTypeId(Long.parseLong(typeId.trim())); }
+            catch (NumberFormatException ignored) {}
+        }
+
+        v.setDescription(req.getParameter("description"));
+
+        String fineAmount = req.getParameter("fineAmount");
+        if (fineAmount != null && !fineAmount.isBlank()) {
+            try { v.setFineAmount(new BigDecimal(fineAmount.trim())); }
+            catch (NumberFormatException ignored) {}
+        }
+
+        String violationDate = req.getParameter("violationDate");
+        if (violationDate != null && !violationDate.isBlank()) {
+            try { v.setViolationDate(LocalDateTime.parse(violationDate)); }
+            catch (Exception ignored) {}
+        }
+
+        v.setPaid("on".equals(req.getParameter("paid")) || "true".equals(req.getParameter("paid")));
+
+        return v;
+    }
+
+    private String validateViolation(Violation v) {
+        if (v.getViolationTypeId() == null) return "Тип нарушения обязателен";
+        if (v.getDescription() == null || v.getDescription().isBlank()) return "Описание обязательно";
+        if (v.getFineAmount() == null || v.getFineAmount().compareTo(BigDecimal.ZERO) <= 0)
+            return "Сумма штрафа должна быть положительной";
+        if (v.getViolationDate() == null) return "Дата нарушения обязательна";
+        return null;
     }
 }
