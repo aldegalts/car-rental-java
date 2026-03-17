@@ -13,6 +13,9 @@ public class Violation {
     private LocalDateTime violationDate;
     private boolean paid;
 
+    // transient display fields
+    private String violationTypeName;
+
     public Violation() {}
 
     public Violation(Long id, Long rentalId, Long violationTypeId, String description,
@@ -46,4 +49,7 @@ public class Violation {
 
     public boolean isPaid() { return paid; }
     public void setPaid(boolean paid) { this.paid = paid; }
+
+    public String getViolationTypeName() { return violationTypeName; }
+    public void setViolationTypeName(String violationTypeName) { this.violationTypeName = violationTypeName; }
 }

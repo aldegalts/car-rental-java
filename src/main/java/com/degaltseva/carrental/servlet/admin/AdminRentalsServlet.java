@@ -2,6 +2,8 @@ package com.degaltseva.carrental.servlet.admin;
 
 import com.degaltseva.carrental.model.Rental;
 import com.degaltseva.carrental.service.*;
+import com.degaltseva.carrental.service.ViolationService;
+import com.degaltseva.carrental.service.ViolationTypeService;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -20,6 +22,8 @@ public class AdminRentalsServlet extends HttpServlet {
     private final CarService carService = new CarService();
     private final ClientService clientService = new ClientService();
     private final RentalStatusService rentalStatusService = new RentalStatusService();
+    private final ViolationService violationService = new ViolationService();
+    private final ViolationTypeService violationTypeService = new ViolationTypeService();
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -98,8 +102,13 @@ public class AdminRentalsServlet extends HttpServlet {
 
         String message = req.getParameter("message");
         if ("updated".equals(message)) req.setAttribute("message", "Аренда обновлена");
+        if ("violation_created".equals(message)) req.setAttribute("message", "Нарушение зафиксировано");
+        if ("violation_updated".equals(message)) req.setAttribute("message", "Нарушение обновлено");
+        if ("violation_deleted".equals(message)) req.setAttribute("message", "Нарушение удалено");
 
         req.setAttribute("rental", rental.get());
+        req.setAttribute("violations", violationService.findByRentalId(id));
+        req.setAttribute("violationTypes", violationTypeService.findAll());
         req.setAttribute("pageTitle", "Аренда #" + id);
         req.getRequestDispatcher("/WEB-INF/jsp/admin/rental-detail.jsp").forward(req, resp);
     }
